@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	reload = make(chan interface{})
+	reload  = make(chan interface{})
+	clients = map[*websocket.Conn]struct{}{}
 )
 
 func main() {
@@ -99,7 +100,9 @@ func onGoUpdate() {
 		RunCmd(cmd)
 	}()
 
-	reload <- struct{}{}
+	if len(clients) > 0 {
+		reload <- struct{}{}
+	}
 }
 
 // Send empty struct on reload signal
@@ -107,6 +110,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	var upgrader = websocket.Upgrader{}
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	ws, err := upgrader.Upgrade(w, r, nil)
+	clients[ws] = struct{}{}
 	if err != nil {
 		log.Println("upgrade:", err)
 		return
@@ -117,6 +121,7 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		ws.ReadMessage()
+		delete(clients, ws)
 		done <- struct{}{}
 	}()
 	for {
