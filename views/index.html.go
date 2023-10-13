@@ -31,7 +31,7 @@ func StreamCommonHeaders(qw422016 *qt422016.Writer) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="./assets/pico.css">
 <!-- <link rel="stylesheet" href="./assets/water.css"> -->
-<script src="./assets/htmx.js" async defer></script>
+<script src="./assets/htmx.js"></script>
 
 <!-- TODO remove before pushing to production -->
 <!-- <script>
@@ -48,106 +48,107 @@ func StreamCommonHeaders(qw422016 *qt422016.Writer) {
             window.location.href = window.location.href
         }
     };
+    htmx.logAll()
 </script> -->
 
 `)
-//line views/index.html:32
+//line views/index.html:33
 }
 
-//line views/index.html:32
+//line views/index.html:33
 func WriteCommonHeaders(qq422016 qtio422016.Writer) {
-//line views/index.html:32
+//line views/index.html:33
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line views/index.html:32
+//line views/index.html:33
 	StreamCommonHeaders(qw422016)
-//line views/index.html:32
+//line views/index.html:33
 	qt422016.ReleaseWriter(qw422016)
-//line views/index.html:32
+//line views/index.html:33
 }
 
-//line views/index.html:32
+//line views/index.html:33
 func CommonHeaders() string {
-//line views/index.html:32
+//line views/index.html:33
 	qb422016 := qt422016.AcquireByteBuffer()
-//line views/index.html:32
+//line views/index.html:33
 	WriteCommonHeaders(qb422016)
-//line views/index.html:32
+//line views/index.html:33
 	qs422016 := string(qb422016.B)
-//line views/index.html:32
+//line views/index.html:33
 	qt422016.ReleaseByteBuffer(qb422016)
-//line views/index.html:32
+//line views/index.html:33
 	return qs422016
-//line views/index.html:32
+//line views/index.html:33
 }
 
-//line views/index.html:34
+//line views/index.html:35
 func StreamIndexPage(qw422016 *qt422016.Writer, p *Page, body string) {
-//line views/index.html:34
+//line views/index.html:35
 	qw422016.N().S(`
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
 <head>
     <title>`)
-//line views/index.html:39
+//line views/index.html:40
 	qw422016.E().S(p.Title)
-//line views/index.html:39
+//line views/index.html:40
 	qw422016.N().S(`</title>
     <meta name="description" content="`)
-//line views/index.html:40
+//line views/index.html:41
 	qw422016.E().S(p.Description)
-//line views/index.html:40
+//line views/index.html:41
 	qw422016.N().S(`">
     `)
-//line views/index.html:41
+//line views/index.html:42
 	qw422016.N().S(CommonHeaders())
-//line views/index.html:41
+//line views/index.html:42
 	qw422016.N().S(`
 
 </head>
 
 <body>
     `)
-//line views/index.html:46
+//line views/index.html:47
 	qw422016.N().S(body)
-//line views/index.html:46
+//line views/index.html:47
 	qw422016.N().S(`
 </body>
 
 </html>
 `)
-//line views/index.html:50
+//line views/index.html:51
 }
 
-//line views/index.html:50
+//line views/index.html:51
 func WriteIndexPage(qq422016 qtio422016.Writer, p *Page, body string) {
-//line views/index.html:50
+//line views/index.html:51
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line views/index.html:50
+//line views/index.html:51
 	StreamIndexPage(qw422016, p, body)
-//line views/index.html:50
+//line views/index.html:51
 	qt422016.ReleaseWriter(qw422016)
-//line views/index.html:50
+//line views/index.html:51
 }
 
-//line views/index.html:50
+//line views/index.html:51
 func IndexPage(p *Page, body string) string {
-//line views/index.html:50
+//line views/index.html:51
 	qb422016 := qt422016.AcquireByteBuffer()
-//line views/index.html:50
+//line views/index.html:51
 	WriteIndexPage(qb422016, p, body)
-//line views/index.html:50
+//line views/index.html:51
 	qs422016 := string(qb422016.B)
-//line views/index.html:50
+//line views/index.html:51
 	qt422016.ReleaseByteBuffer(qb422016)
-//line views/index.html:50
+//line views/index.html:51
 	return qs422016
-//line views/index.html:50
+//line views/index.html:51
 }
 
-//line views/index.html:54
+//line views/index.html:55
 func StreamIndexBody(qw422016 *qt422016.Writer) {
-//line views/index.html:54
+//line views/index.html:55
 	qw422016.N().S(`
 <h1> Title </h1>
 <button hx-get="first">
@@ -156,31 +157,31 @@ func StreamIndexBody(qw422016 *qt422016.Writer) {
 </button>
 <code>Let's go there</code>
 `)
-//line views/index.html:61
+//line views/index.html:62
 }
 
-//line views/index.html:61
+//line views/index.html:62
 func WriteIndexBody(qq422016 qtio422016.Writer) {
-//line views/index.html:61
+//line views/index.html:62
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line views/index.html:61
+//line views/index.html:62
 	StreamIndexBody(qw422016)
-//line views/index.html:61
+//line views/index.html:62
 	qt422016.ReleaseWriter(qw422016)
-//line views/index.html:61
+//line views/index.html:62
 }
 
-//line views/index.html:61
+//line views/index.html:62
 func IndexBody() string {
-//line views/index.html:61
+//line views/index.html:62
 	qb422016 := qt422016.AcquireByteBuffer()
-//line views/index.html:61
+//line views/index.html:62
 	WriteIndexBody(qb422016)
-//line views/index.html:61
+//line views/index.html:62
 	qs422016 := string(qb422016.B)
-//line views/index.html:61
+//line views/index.html:62
 	qt422016.ReleaseByteBuffer(qb422016)
-//line views/index.html:61
+//line views/index.html:62
 	return qs422016
-//line views/index.html:61
+//line views/index.html:62
 }
