@@ -22,10 +22,16 @@ func main() {
 	}
 	defer watcher.Close()
 
-	// Add a path.
-	err = watcher.Add("views")
+	// Watch entire directory
+	entries, err := os.ReadDir("./")
 	if err != nil {
 		log.Fatal(err)
+	}
+	for _, e := range entries {
+		err = watcher.Add(e.Name())
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	http.HandleFunc("/ws", handleWs)
@@ -35,6 +41,7 @@ func main() {
 		}
 	}()
 
+	log.Println("watching for file changes")
 	for {
 		select {
 
@@ -44,26 +51,17 @@ func main() {
 			}
 
 			name := event.Name
+
 			if name[len(name)-4:] == "html" {
+				onHtmlUpdate(name)
+			}
 
-				// Compile modified html
-				cmd := exec.Command("qtc", "-file="+event.Name)
-				RunCmd(cmd)
+			if name[len(name)-3:] == "sql" {
+				onSqlUpdate(name)
+			}
 
-				// Kill main if in execution
-				cmd = exec.Command("pkill", "main")
-				err := RunCmd(cmd)
-				if err != nil {
-					println(err.Error())
-				}
-
-				// Non blocking go routine starting main.go
-				go func() {
-					cmd = exec.Command("go", "run", "main.go")
-					RunCmd(cmd)
-				}()
-
-				reload <- struct{}{}
+			if name[len(name)-2:] == "go" {
+				onGoUpdate()
 			}
 
 		case err, ok := <-watcher.Errors:
@@ -76,6 +74,35 @@ func main() {
 
 }
 
+// Compile modified html
+func onHtmlUpdate(fileName string) {
+	cmd := exec.Command("qtc", "-file="+fileName)
+	RunCmd(cmd)
+}
+
+// Run sqlc generate
+func onSqlUpdate(fileName string) {
+	cmd := exec.Command("sqlc", "generate")
+	RunCmd(cmd)
+}
+
+// Kill main if in execution, run main.go and signal to reload chan
+func onGoUpdate() {
+	cmd := exec.Command("pkill", "main")
+	err := RunCmd(cmd)
+	if err != nil {
+		println(err.Error())
+	}
+
+	go func() {
+		cmd = exec.Command("go", "run", "main.go")
+		RunCmd(cmd)
+	}()
+
+	reload <- struct{}{}
+}
+
+// Send empty struct on reload signal
 func handleWs(w http.ResponseWriter, r *http.Request) {
 	var upgrader = websocket.Upgrader{}
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }

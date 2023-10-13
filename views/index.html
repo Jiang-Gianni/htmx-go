@@ -5,36 +5,40 @@ Description string
 }
 %}
 
+{% func CommonHeaders() %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./assets/pico.css">
+<!-- <link rel="stylesheet" href="./assets/water.css"> -->
+<script src="./assets/htmx.js" async defer></script>
+
+<!-- TODO remove before pushing to production -->
+<!-- <script>
+    var wsuri = "ws://localhost:1234/ws";
+    window.onload = function () {
+        sock = new WebSocket(wsuri);
+        sock.onopen = function () {
+            console.log("connected to " + wsuri);
+        }
+        sock.onclose = function (e) {
+            console.log("connection closed (" + e.code + ")");
+        }
+        sock.onmessage = function (e) {
+            window.location.href = window.location.href
+        }
+    };
+</script> -->
+
+{% endfunc %}
+
 {% func IndexPage(p *Page, body string) %}
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
 <head>
     <title>{%s p.Title %}</title>
-    <meta charset="utf-8">
     <meta name="description" content="{%s p.Description %}">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./assets/pico.css">
-    <script src="./assets/htmx.min.js" async defer></script>
-
-
-    <!-- Reload page on websocket signal -->
-    <script>
-        var wsuri = "ws://localhost:1234/ws";
-        window.onload = function () {
-            console.log("onload");
-            sock = new WebSocket(wsuri);
-            sock.onopen = function () {
-                console.log("connected to " + wsuri);
-            }
-            sock.onclose = function (e) {
-                console.log("connection closed (" + e.code + ")");
-            }
-            sock.onmessage = function (e) {
-                window.location.href = window.location.href
-            }
-        };
-    </script>
+    {%s= CommonHeaders() %}
 
 </head>
 
@@ -48,15 +52,10 @@ Description string
 
 
 {% func IndexBody() %}
-<main>
-    this is menu
-</main>
-<div>Hello </div>
-
-<h1> button </h1>
+<h1> Title </h1>
 <button hx-get="first">
     <a href="first"></a>
-    butt
+    First
 </button>
-<code>this is</code>
+<code>Let's go there</code>
 {% endfunc %}
