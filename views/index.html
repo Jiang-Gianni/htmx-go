@@ -9,11 +9,27 @@ Description string
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="./assets/pico.css">
-<!-- <link rel="stylesheet" href="./assets/water.css"> -->
-<script src="./assets/htmx.js"></script>
+
+<script src="http://localhost:3000/assets/htmx.js"></script>
+
+<script src="http://localhost:3000/assets/unocss.js"></script>
+
+<link rel="stylesheet" href="http://localhost:3000/assets/pico.css">
+
+<link rel="stylesheet" href="http://localhost:3000/assets/style.css">
+
+<script defer src="http://localhost:3000/assets/alpine-collapse.js"></script>
+
+<script src="http://localhost:3000/assets/alpine.js" defer></script>
+
+<style>
+    [un-cloak] {
+        display: none;
+    }
+</style>
 
 <!-- TODO remove before pushing to production -->
-<!-- <script>
+<script>
     var wsuri = "ws://localhost:1234/ws";
     window.onload = function () {
         sock = new WebSocket(wsuri);
@@ -28,7 +44,7 @@ Description string
         }
     };
     htmx.logAll()
-</script> -->
+</script>
 
 {% endfunc %}
 

@@ -6,6 +6,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/gorilla/websocket v1.5.0
+	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/valyala/quicktemplate v1.7.0
 )
 

@@ -65,6 +65,10 @@ func main() {
 				onGoUpdate()
 			}
 
+			if name[len(name)-4:] == "scss" {
+				onScssUpdate()
+			}
+
 		case err, ok := <-watcher.Errors:
 			if !ok {
 				return
@@ -87,6 +91,13 @@ func onSqlUpdate(fileName string) {
 	RunCmd(cmd)
 }
 
+// Run sass compiler
+func onScssUpdate() {
+	cmd := exec.Command("sass", "style/main.scss", "assets/style.css")
+	RunCmd(cmd)
+	reloadSignal()
+}
+
 // Kill main if in execution, run main.go and signal to reload chan
 func onGoUpdate() {
 	cmd := exec.Command("pkill", "main")
@@ -100,9 +111,7 @@ func onGoUpdate() {
 		RunCmd(cmd)
 	}()
 
-	if len(clients) > 0 {
-		reload <- struct{}{}
-	}
+	reloadSignal()
 }
 
 // Send empty struct on reload signal
@@ -140,4 +149,10 @@ func RunCmd(cmd *exec.Cmd) error {
 	cmd.Stdout = os.Stdout
 
 	return cmd.Run()
+}
+
+func reloadSignal() {
+	if len(clients) > 0 {
+		reload <- struct{}{}
+	}
 }

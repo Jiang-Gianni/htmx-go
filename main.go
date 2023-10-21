@@ -2,8 +2,7 @@ package main
 
 import (
 	"embed"
-	"io/fs"
-	"log"
+	"os"
 
 	"github.com/Jiang-Gianni/htmx-go/server"
 )
@@ -12,9 +11,10 @@ import (
 var assetsFs embed.FS
 
 func main() {
-	fsys, err := fs.Sub(assetsFs, "assets")
-	if err != nil {
-		log.Fatal(err)
-	}
+	fsys := os.DirFS("assets")
+	// fsys, err := fs.Sub(assetsFs, "assets")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	server.RegisterAndRun(fsys)
 }
