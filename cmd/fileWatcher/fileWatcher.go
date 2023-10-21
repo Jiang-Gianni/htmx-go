@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -23,17 +24,32 @@ func main() {
 	}
 	defer watcher.Close()
 
-	// Watch entire directory
-	entries, err := os.ReadDir("./")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, e := range entries {
-		err = watcher.Add(e.Name())
+	// Watch entire directory and subdirectories
+	addEntries := func(string) {}
+	addEntries = func(name string) {
+		entries, err := os.ReadDir(name)
 		if err != nil {
 			log.Fatal(err)
 		}
+		for _, e := range entries {
+			if e.IsDir() && e.Name() != ".git" && e.Name() != "cmd" {
+				var entryName string
+				if name == "./" {
+					entryName = "./" + e.Name()
+				} else {
+					entryName = name + "/" + e.Name()
+				}
+				err = watcher.Add(entryName)
+				if err != nil {
+
+					log.Fatal(err)
+				}
+				fmt.Println(entryName)
+				addEntries(entryName)
+			}
+		}
 	}
+	addEntries("./")
 
 	http.HandleFunc("/ws", handleWs)
 	go func() {
