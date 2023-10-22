@@ -100,21 +100,21 @@ func main() {
 
 // Compile modified html
 func onHtmlUpdate(fileName string) {
-	trackTime(time.Now(), "qtc")
+	defer trackTime(time.Now(), "qtc")
 	cmd := exec.Command("qtc", "-file="+fileName)
 	RunCmd(cmd)
 }
 
 // Run sqlc generate
 func onSqlUpdate() {
-	trackTime(time.Now(), "sqlc")
+	defer trackTime(time.Now(), "sqlc")
 	cmd := exec.Command("sqlc", "generate")
 	RunCmd(cmd)
 }
 
 // Run sass compiler
 func onScssUpdate() {
-	trackTime(time.Now(), "scss + purgecss")
+	defer trackTime(time.Now(), "scss + purgecss")
 	cmd := exec.Command("sass", "--style=compressed", "style/main.scss", "assets/style.css")
 	RunCmd(cmd)
 
@@ -124,7 +124,7 @@ func onScssUpdate() {
 
 // Kill main if in execution, run main.go and signal to reload chan
 func onGoUpdate() {
-	trackTime(time.Now(), "go")
+	defer trackTime(time.Now(), "go")
 	cmd := exec.Command("pkill", "main")
 	err := RunCmd(cmd)
 	if err != nil {
