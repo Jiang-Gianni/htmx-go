@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/websocket"
@@ -70,11 +71,12 @@ func main() {
 			name := event.Name
 
 			if name[len(name)-4:] == "html" {
+				onScssUpdate()
 				onHtmlUpdate(name)
 			}
 
 			if name[len(name)-3:] == "sql" {
-				onSqlUpdate(name)
+				onSqlUpdate()
 			}
 
 			if name[len(name)-2:] == "go" {
@@ -83,6 +85,7 @@ func main() {
 
 			if name[len(name)-4:] == "scss" {
 				onScssUpdate()
+				reloadSignal()
 			}
 
 		case err, ok := <-watcher.Errors:
@@ -97,25 +100,31 @@ func main() {
 
 // Compile modified html
 func onHtmlUpdate(fileName string) {
+	trackTime(time.Now(), "qtc")
 	cmd := exec.Command("qtc", "-file="+fileName)
 	RunCmd(cmd)
 }
 
 // Run sqlc generate
-func onSqlUpdate(fileName string) {
+func onSqlUpdate() {
+	trackTime(time.Now(), "sqlc")
 	cmd := exec.Command("sqlc", "generate")
 	RunCmd(cmd)
 }
 
 // Run sass compiler
 func onScssUpdate() {
-	cmd := exec.Command("sass", "style/main.scss", "assets/style.css")
+	trackTime(time.Now(), "scss + purgecss")
+	cmd := exec.Command("sass", "--style=compressed", "style/main.scss", "assets/style.css")
 	RunCmd(cmd)
-	reloadSignal()
+
+	cmd = exec.Command("purgecss", "-css", "assets/style.css", "--content", "views/*.html", "--output", "assets/")
+	RunCmd(cmd)
 }
 
 // Kill main if in execution, run main.go and signal to reload chan
 func onGoUpdate() {
+	trackTime(time.Now(), "go")
 	cmd := exec.Command("pkill", "main")
 	err := RunCmd(cmd)
 	if err != nil {
@@ -171,4 +180,8 @@ func reloadSignal() {
 	if len(clients) > 0 {
 		reload <- struct{}{}
 	}
+}
+
+func trackTime(start time.Time, update string) {
+	fmt.Println(update, " took ", time.Since(start))
 }

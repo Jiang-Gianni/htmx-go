@@ -12,3 +12,6 @@ build:
 
 rename:
 	@find . -type f -exec sed -i -e 's/github.com\/Jiang-Gianni\/htmx-go/github.com\/Jiang-Gianni\/$(name)/g' {} \;
+
+css:
+	@sass --style=compressed style/main.scss assets/style.css

@@ -29,13 +29,12 @@ func StreamCommonHeaders(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="./assets/pico.css">
 
 <script src="http://localhost:3000/assets/htmx.js"></script>
 
 <script src="http://localhost:3000/assets/unocss.js"></script>
 
-<link rel="stylesheet" href="http://localhost:3000/assets/pico.css">
+<!-- <link rel="stylesheet" href="http://localhost:3000/assets/pico.css"> -->
 
 <link rel="stylesheet" href="http://localhost:3000/assets/style.css">
 
@@ -68,103 +67,127 @@ func StreamCommonHeaders(qw422016 *qt422016.Writer) {
 </script>
 
 `)
-//line views/index.html:49
+//line views/index.html:48
 }
 
-//line views/index.html:49
+//line views/index.html:48
 func WriteCommonHeaders(qq422016 qtio422016.Writer) {
-//line views/index.html:49
+//line views/index.html:48
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line views/index.html:49
+//line views/index.html:48
 	StreamCommonHeaders(qw422016)
-//line views/index.html:49
+//line views/index.html:48
 	qt422016.ReleaseWriter(qw422016)
-//line views/index.html:49
+//line views/index.html:48
 }
 
-//line views/index.html:49
+//line views/index.html:48
 func CommonHeaders() string {
-//line views/index.html:49
+//line views/index.html:48
 	qb422016 := qt422016.AcquireByteBuffer()
-//line views/index.html:49
+//line views/index.html:48
 	WriteCommonHeaders(qb422016)
-//line views/index.html:49
+//line views/index.html:48
 	qs422016 := string(qb422016.B)
-//line views/index.html:49
+//line views/index.html:48
 	qt422016.ReleaseByteBuffer(qb422016)
-//line views/index.html:49
+//line views/index.html:48
 	return qs422016
-//line views/index.html:49
+//line views/index.html:48
 }
 
-//line views/index.html:51
+//line views/index.html:50
 func StreamIndexPage(qw422016 *qt422016.Writer, p *Page, body string) {
-//line views/index.html:51
+//line views/index.html:50
 	qw422016.N().S(`
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
 <head>
     <title>`)
-//line views/index.html:56
+//line views/index.html:55
 	qw422016.E().S(p.Title)
-//line views/index.html:56
+//line views/index.html:55
 	qw422016.N().S(`</title>
     <meta name="description" content="`)
-//line views/index.html:57
+//line views/index.html:56
 	qw422016.E().S(p.Description)
-//line views/index.html:57
+//line views/index.html:56
 	qw422016.N().S(`">
     `)
-//line views/index.html:58
+//line views/index.html:57
 	qw422016.N().S(CommonHeaders())
-//line views/index.html:58
+//line views/index.html:57
 	qw422016.N().S(`
 
 </head>
 
 <body>
     `)
-//line views/index.html:63
+//line views/index.html:62
 	qw422016.N().S(body)
-//line views/index.html:63
+//line views/index.html:62
 	qw422016.N().S(`
+    <div class="alert alert-primary" role="alert">
+        A simple primary alert—check it out!
+    </div>
+    <div class="alert alert-secondary" role="alert">
+        A simple secondary alert—check it out!
+    </div>
+    <div class="alert alert-success" role="alert">
+        A simple success alert—check it out!
+    </div>
+    <div class="alert alert-danger" role="alert">
+        A simple danger alert—check it out!
+    </div>
+    <div class="alert alert-warning" role="alert">
+        A simple warning alert—check it out!
+    </div>
+    <div class="alert alert-info" role="alert">
+        A simple info alert—check it out!
+    </div>
+    <div class="alert alert-light" role="alert">
+        A simple light alert—check it out!
+    </div>
+    <div class="alert alert-dark" role="alert">
+        A simple dark alert—check it out!
+    </div>
 </body>
 
 </html>
 `)
-//line views/index.html:67
+//line views/index.html:90
 }
 
-//line views/index.html:67
+//line views/index.html:90
 func WriteIndexPage(qq422016 qtio422016.Writer, p *Page, body string) {
-//line views/index.html:67
+//line views/index.html:90
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line views/index.html:67
+//line views/index.html:90
 	StreamIndexPage(qw422016, p, body)
-//line views/index.html:67
+//line views/index.html:90
 	qt422016.ReleaseWriter(qw422016)
-//line views/index.html:67
+//line views/index.html:90
 }
 
-//line views/index.html:67
+//line views/index.html:90
 func IndexPage(p *Page, body string) string {
-//line views/index.html:67
+//line views/index.html:90
 	qb422016 := qt422016.AcquireByteBuffer()
-//line views/index.html:67
+//line views/index.html:90
 	WriteIndexPage(qb422016, p, body)
-//line views/index.html:67
+//line views/index.html:90
 	qs422016 := string(qb422016.B)
-//line views/index.html:67
+//line views/index.html:90
 	qt422016.ReleaseByteBuffer(qb422016)
-//line views/index.html:67
+//line views/index.html:90
 	return qs422016
-//line views/index.html:67
+//line views/index.html:90
 }
 
-//line views/index.html:71
+//line views/index.html:94
 func StreamIndexBody(qw422016 *qt422016.Writer) {
-//line views/index.html:71
+//line views/index.html:94
 	qw422016.N().S(`
 <h1> Title </h1>
 <button hx-get="first">
@@ -173,31 +196,31 @@ func StreamIndexBody(qw422016 *qt422016.Writer) {
 </button>
 <code>Let's go there</code>
 `)
-//line views/index.html:78
+//line views/index.html:101
 }
 
-//line views/index.html:78
+//line views/index.html:101
 func WriteIndexBody(qq422016 qtio422016.Writer) {
-//line views/index.html:78
+//line views/index.html:101
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line views/index.html:78
+//line views/index.html:101
 	StreamIndexBody(qw422016)
-//line views/index.html:78
+//line views/index.html:101
 	qt422016.ReleaseWriter(qw422016)
-//line views/index.html:78
+//line views/index.html:101
 }
 
-//line views/index.html:78
+//line views/index.html:101
 func IndexBody() string {
-//line views/index.html:78
+//line views/index.html:101
 	qb422016 := qt422016.AcquireByteBuffer()
-//line views/index.html:78
+//line views/index.html:101
 	WriteIndexBody(qb422016)
-//line views/index.html:78
+//line views/index.html:101
 	qs422016 := string(qb422016.B)
-//line views/index.html:78
+//line views/index.html:101
 	qt422016.ReleaseByteBuffer(qb422016)
-//line views/index.html:78
+//line views/index.html:101
 	return qs422016
-//line views/index.html:78
+//line views/index.html:101
 }
