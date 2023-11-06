@@ -6,12 +6,12 @@ import (
 	"github.com/Jiang-Gianni/htmx-go/views"
 )
 
-func (a *Api) getIndex() http.HandlerFunc {
-	indexPage := &views.Page{
-		Title:       "Title HTMX and Go",
+func (a *Api) getFirst() http.HandlerFunc {
+	firstPage := &views.Page{
+		Title:       "First",
 		Description: "Index Page",
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		views.WriteIndexPage(w, indexPage, views.IndexBody())
+		views.WriteIndexPage(w, firstPage, views.First())
 	}
 }
