@@ -35,7 +35,7 @@ func (a *Api) AllowedMiddeware(next http.Handler) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			if !a.Allowed(*r) {
 				w.WriteHeader(http.StatusForbidden)
-				a.log.Warn.Println("Invalid resource access")
+				a.log.Warn("Invalid resource access")
 				return
 			}
 			next.ServeHTTP(w, r)

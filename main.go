@@ -6,6 +6,7 @@ import (
 	"embed"
 	"io/fs"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,7 +14,6 @@ import (
 	"time"
 
 	"github.com/Jiang-Gianni/htmx-go/api"
-	"github.com/Jiang-Gianni/htmx-go/mylogger"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -22,7 +22,7 @@ import (
 var assetsFs embed.FS
 
 // These variables will be set by -ldflags during the compilation and printed out in main
-// go build -ldflags="-X main.environment=${ENV} -X main.gitBranch=${GIT_BRANCH}" main.go
+// go build -ldflags="-X main.environment=${ENV} -X main.gitCommit=${GIT_COMMIT}" main.go
 var environment = "DEV"
 var gitCommit = "gitCommit"
 
@@ -52,9 +52,22 @@ func run() error {
 	}
 
 	// Logger
-	myLog := mylogger.New(os.Stdout, log.LstdFlags|log.Lshortfile)
-	myLog.Info.Println("Environment: ", environment, "arstneio")
-	myLog.Info.Println("Git Commit: ", gitCommit)
+	logWriter := os.Stdout
+
+	// logWriter := api.OpenObserveWriter{}
+	logHandler := slog.NewJSONHandler(logWriter, &slog.HandlerOptions{
+		Level:     slog.LevelDebug,
+		AddSource: true,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				a.Value = slog.TimeValue(time.Now().Local().Truncate(time.Millisecond))
+			}
+			return a
+		},
+	})
+	mySlog := slog.New(logHandler)
+
+	mySlog.Info("START", "environment", environment, "gitCommit", gitCommit, "port", srv.Addr)
 
 	// Assets folder to be served
 	fsys, err := fs.Sub(assetsFs, "assets")
@@ -69,7 +82,7 @@ func run() error {
 	}
 
 	// Api initialization
-	myApi := api.New(ctx, db, myLog, fsys)
+	myApi := api.New(ctx, db, mySlog, fsys)
 	srv.Handler = myApi.MountHandlers()
 
 	// Error channel to listen to errors
@@ -77,7 +90,7 @@ func run() error {
 
 	// Start of server
 	go func() {
-		myLog.Info.Println("Listening on port: ", srv.Addr)
+		mySlog.Info("LISTENING", "port", srv.Addr)
 		errs <- srv.ListenAndServe()
 	}()
 

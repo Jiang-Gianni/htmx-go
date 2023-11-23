@@ -28,7 +28,7 @@ func (a *Api) getAssets() http.HandlerFunc {
 		w.Header().Set("Content-Encoding", "gzip")
 		gz, err = gzip.NewWriterLevel(w, gzip.BestCompression)
 		if err != nil {
-			a.log.Error.Println(err)
+			a.log.Error(err.Error())
 		}
 		defer gz.Close()
 		gzr = gzipResponseWriter{Writer: gz, ResponseWriter: w}
