@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"database/sql"
 	"embed"
+	"io"
 	"io/fs"
 	"log"
 	"log/slog"
@@ -14,6 +16,7 @@ import (
 	"time"
 
 	"github.com/Jiang-Gianni/htmx-go/api"
+	"github.com/Jiang-Gianni/htmx-go/logger"
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -52,9 +55,23 @@ func run() error {
 	}
 
 	// Logger
-	logWriter := os.Stdout
+	var logWriter io.Writer
 
-	// logWriter := api.OpenObserveWriter{}
+	if environment == "DEV" {
+		logWriter = os.Stdout
+	} else {
+		logWriter = logger.OpenObserveWriter{
+			URL:      os.Getenv("OPEN_OBSERVE_URL"),
+			User:     os.Getenv("OPEN_OBSERVE_USER"),
+			Password: os.Getenv("OPEN_OBSERVE_PASSWORD"),
+			Client: &http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
+				},
+			},
+		}
+	}
+
 	logHandler := slog.NewJSONHandler(logWriter, &slog.HandlerOptions{
 		Level:     slog.LevelDebug,
 		AddSource: true,
