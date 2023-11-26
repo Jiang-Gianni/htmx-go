@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -13,8 +13,9 @@ import (
 )
 
 var (
-	reload  = make(chan interface{})
-	clients = map[*websocket.Conn]struct{}{}
+	reload     = make(chan interface{})
+	clients    = map[*websocket.Conn]struct{}{}
+	testRegexp = regexp.MustCompile("_test.go")
 )
 
 func main() {
@@ -45,7 +46,7 @@ func main() {
 
 					log.Fatal(err)
 				}
-				fmt.Println(entryName)
+				log.Println(entryName)
 				addEntries(entryName)
 			}
 		}
@@ -59,6 +60,7 @@ func main() {
 		}
 	}()
 
+	go RunMainGo()
 	log.Println("watching for file changes")
 	for {
 		select {
@@ -79,8 +81,8 @@ func main() {
 				onSqlUpdate()
 			}
 
-			if name[len(name)-2:] == "go" {
-				onGoUpdate()
+			if name[len(name)-2:] == "go" && !testRegexp.MatchString(name) {
+				onGoUpdate(name)
 			}
 
 			if name[len(name)-4:] == "scss" {
@@ -123,18 +125,15 @@ func onScssUpdate() {
 }
 
 // Kill main if in execution, run main.go and signal to reload chan
-func onGoUpdate() {
+func onGoUpdate(name string) {
 	defer trackTime(time.Now(), "go")
 	cmd := exec.Command("pkill", "main")
-	err := RunCmd(cmd)
-	if err != nil {
-		println(err.Error())
-	}
+	RunCmd(cmd)
 
-	go func() {
-		cmd = exec.Command("go", "run", "main.go")
-		RunCmd(cmd)
-	}()
+	cmd = exec.Command("gotests", "-all", "-w", "-i", name)
+	RunCmd(cmd)
+
+	go RunMainGo()
 
 	reloadSignal()
 }
@@ -154,7 +153,10 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 	done := make(chan interface{})
 
 	go func() {
-		ws.ReadMessage()
+		_, _, err = ws.ReadMessage()
+		if err != nil {
+			log.Println(err)
+		}
 		delete(clients, ws)
 		done <- struct{}{}
 	}()
@@ -163,17 +165,23 @@ func handleWs(w http.ResponseWriter, r *http.Request) {
 		case <-done:
 			return
 		case <-reload:
-			println("reload")
-			ws.WriteJSON(struct{}{})
+			log.Println("reload")
+			err := ws.WriteJSON(struct{}{})
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 }
 
-func RunCmd(cmd *exec.Cmd) error {
+func RunCmd(cmd *exec.Cmd) {
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 
-	return cmd.Run()
+	err := cmd.Run()
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func reloadSignal() {
@@ -183,5 +191,10 @@ func reloadSignal() {
 }
 
 func trackTime(start time.Time, update string) {
-	fmt.Println(update, " took ", time.Since(start))
+	log.Println(update, " took ", time.Since(start))
+}
+
+func RunMainGo() {
+	cmd := exec.Command("go", "run", "main.go")
+	RunCmd(cmd)
 }

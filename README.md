@@ -10,3 +10,9 @@ Htmx and Go
 ```bash
 npm i -g purgecss
 ```
+
+**[gotests](https://github.com/cweill/gotests)**
+
+```bash
+go get -u github.com/cweill/gotests/...
+```

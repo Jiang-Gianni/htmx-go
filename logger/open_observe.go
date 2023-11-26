@@ -19,6 +19,7 @@ func (o OpenObserveWriter) Write(p []byte) (n int, err error) {
 	if err != nil {
 		log.Println(err)
 	}
+
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.SetBasicAuth(o.User, o.Password)
 	resp, err := o.Client.Do(req)
@@ -35,7 +36,10 @@ func (o OpenObserveWriter) Write(p []byte) (n int, err error) {
 		}
 		err = closeErr
 	}()
-	io.Copy(io.Discard, resp.Body)
+	m, err := io.Copy(io.Discard, resp.Body)
+	if err != nil {
+		return int(m), err
+	}
 	if resp.StatusCode != http.StatusOK {
 		log.Println("OpenObserve status code:", resp.StatusCode, "\n log", string(p))
 	}

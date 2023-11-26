@@ -6,22 +6,22 @@ import (
 	"io/fs"
 	"log/slog"
 
-	database "github.com/Jiang-Gianni/htmx-go/db"
+	"github.com/Jiang-Gianni/htmx-go/db"
 )
 
 type Api struct {
 	bgCtx    context.Context
 	db       *sql.DB
-	query    *database.Queries
+	query    *db.Queries
 	log      *slog.Logger
 	assetsFs fs.FS
 }
 
-func New(ctx context.Context, db *sql.DB, log *slog.Logger, assetsFs fs.FS) *Api {
+func New(ctx context.Context, database *sql.DB, log *slog.Logger, assetsFs fs.FS) *Api {
 	return &Api{
 		bgCtx:    ctx,
-		db:       db,
-		query:    database.New(db),
+		db:       database,
+		query:    db.New(database),
 		log:      log,
 		assetsFs: assetsFs,
 	}
